@@ -73,7 +73,7 @@ async function loadFontAsBase64(url: string): Promise<string | null> {
   }
 }
 
-function registerFont(doc: jsPDF, fontB64: string, fileName: string, fontName: string) {
+function registerFont(doc: InstanceType<typeof jsPDF>, fontB64: string, fileName: string, fontName: string) {
   doc.addFileToVFS(fileName, fontB64)
   doc.addFont(fileName, fontName, 'normal')
   return fontName
