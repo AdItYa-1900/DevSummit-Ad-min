@@ -1,4 +1,4 @@
-import type { VercelRequest, VercelResponse } from '@vercel/node'
+import type { Request, Response } from 'express'
 import { createClient } from '@supabase/supabase-js'
 import { Resend } from 'resend'
 import { generateTicketPDF } from './ticketPdf'
@@ -41,7 +41,7 @@ function getEventMeta(slug: string, siteUrl: string): EventMeta | null {
   return events[slug] ?? null
 }
 
-export default async function handler(req: VercelRequest, res: VercelResponse) {
+export default async function handler(req: Request, res: Response) {
   // CORS headers
   res.setHeader('Access-Control-Allow-Origin', '*')
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS')
@@ -104,7 +104,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       }
 
       // Generate ticket and send email
-      const siteUrl = process.env.SITE_URL || `https://${process.env.VERCEL_URL}`
+      const siteUrl = process.env.SITE_URL || process.env.RENDER_EXTERNAL_URL || 'http://localhost:3000'
       const eventSlug = (registration.events as Record<string, unknown>)?.slug as string
       const eventMeta = eventSlug ? getEventMeta(eventSlug, siteUrl) : null
 
@@ -181,7 +181,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       const resendApiKey = process.env.RESEND_API_KEY
       if (resendApiKey) {
         const eventSlug = (registration.events as Record<string, unknown>)?.slug as string
-        const siteUrl = process.env.SITE_URL || `https://${process.env.VERCEL_URL}`
+        const siteUrl = process.env.SITE_URL || process.env.RENDER_EXTERNAL_URL || 'http://localhost:3000'
         const eventMeta = eventSlug ? getEventMeta(eventSlug, siteUrl) : null
         const themeColor = eventMeta?.themeColor || '#d4a373'
         const eventTitle = eventMeta?.title || 'DevSummit Event'

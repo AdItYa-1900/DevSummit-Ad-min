@@ -1,14 +1,8 @@
-import type { VercelRequest, VercelResponse } from '@vercel/node'
+import type { Request, Response } from 'express'
 import { createClient } from '@supabase/supabase-js'
-import jsPDFModule from 'jspdf'
+import { jsPDF } from 'jspdf'
 
-const jsPDF = (
-  typeof (jsPDFModule as unknown as { jsPDF: typeof jsPDFModule }).jsPDF === 'function'
-    ? (jsPDFModule as unknown as { jsPDF: typeof jsPDFModule }).jsPDF
-    : jsPDFModule
-) as typeof jsPDFModule
-
-export default async function handler(req: VercelRequest, res: VercelResponse) {
+export default async function handler(req: Request, res: Response) {
   res.setHeader('Access-Control-Allow-Origin', '*')
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS')
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, x-admin-password')

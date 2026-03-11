@@ -1,4 +1,4 @@
-import type { VercelRequest, VercelResponse } from '@vercel/node'
+import type { Request, Response } from 'express'
 import { createClient } from '@supabase/supabase-js'
 import { Resend } from 'resend'
 import { generateTicketPDF } from './ticketPdf'
@@ -57,7 +57,7 @@ interface WebhookPayload {
 
 // ── Handler ────────────────────────────────────────────
 
-export default async function handler(req: VercelRequest, res: VercelResponse) {
+export default async function handler(req: Request, res: Response) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' })
   }
@@ -85,7 +85,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(500).json({ error: 'Database not configured' })
   }
 
-  const siteUrl = process.env.SITE_URL || `https://${process.env.VERCEL_URL}`
+  const siteUrl = process.env.SITE_URL || process.env.RENDER_EXTERNAL_URL || 'http://localhost:3000'
   const cloudinaryBase = process.env.CLOUDINARY_BASE || ''
 
   try {

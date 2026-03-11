@@ -1,11 +1,4 @@
-import jsPDFModule from 'jspdf'
-
-// Handle both ESM default and CJS module.exports
-const jsPDF = (
-  typeof (jsPDFModule as unknown as { jsPDF: typeof jsPDFModule }).jsPDF === 'function'
-    ? (jsPDFModule as unknown as { jsPDF: typeof jsPDFModule }).jsPDF
-    : jsPDFModule
-) as typeof jsPDFModule
+import { jsPDF } from 'jspdf'
 
 // jsPDF's GState constructor isn't exposed in its published types
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -62,27 +55,10 @@ async function loadAsBase64(url: string): Promise<string | null> {
   }
 }
 
-async function loadFontAsBase64(url: string): Promise<string | null> {
-  try {
-    const response = await fetch(url)
-    if (!response.ok) return null
-    const buffer = Buffer.from(await response.arrayBuffer())
-    return buffer.toString('base64')
-  } catch {
-    return null
-  }
-}
-
-function registerFont(doc: InstanceType<typeof jsPDF>, fontB64: string, fileName: string, fontName: string) {
-  doc.addFileToVFS(fileName, fontB64)
-  doc.addFont(fileName, fontName, 'normal')
-  return fontName
-}
-
 // ── Main generator (server-side) ───────────────────
 
 export async function generateTicketPDF(data: TicketData): Promise<Buffer> {
-  const siteUrl = process.env.SITE_URL || `https://${process.env.VERCEL_URL}`
+  const siteUrl = process.env.SITE_URL || process.env.RENDER_EXTERNAL_URL || 'http://localhost:3000'
 
   const W = 280
   const H = 140
@@ -97,39 +73,21 @@ export async function generateTicketPDF(data: TicketData): Promise<Buffer> {
   const timeStr = now.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })
 
   // Load all assets in parallel
-  const fontUrl = `${siteUrl}/fonts/JosefinSans-Bold.ttf`
-  const fontSBUrl = `${siteUrl}/fonts/JosefinSans-SemiBold.ttf`
   const bambooVertUrl = `${siteUrl}/bamboo-stalk.png`
   const bambooHorizUrl = `${siteUrl}/bamboo-horizontal.png`
   const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&bgcolor=121218&color=ffffff&data=${encodeURIComponent(ticketId)}`
-  const [logoB64, gdgB64, charB64, fontB64, fontSBB64, bambooVertB64, bambooHorizB64, qrB64] = await Promise.all([
+  const [logoB64, gdgB64, charB64, bambooVertB64, bambooHorizB64, qrB64] = await Promise.all([
     loadAsBase64(data.logoUrl),
     loadAsBase64(data.gdgLogoUrl),
     loadAsBase64(data.characterUrl),
-    loadFontAsBase64(fontUrl),
-    loadFontAsBase64(fontSBUrl),
     loadAsBase64(bambooVertUrl),
     loadAsBase64(bambooHorizUrl),
     loadAsBase64(qrUrl)
   ])
 
-  // Register Josefin Sans fonts
-  let titleFont = 'helvetica'
-  let bodyFont = 'helvetica'
-  if (fontB64) {
-    try {
-      registerFont(doc, fontB64, 'JosefinSans-Bold.ttf', 'JosefinSans')
-      doc.setFont('JosefinSans', 'normal')
-      titleFont = 'JosefinSans'
-    } catch { /* fallback to helvetica */ }
-  }
-  if (fontSBB64) {
-    try {
-      registerFont(doc, fontSBB64, 'JosefinSans-SemiBold.ttf', 'JosefinSansSB')
-      doc.setFont('JosefinSansSB', 'normal')
-      bodyFont = 'JosefinSansSB'
-    } catch { /* fallback to helvetica */ }
-  }
+  // Use built-in fonts (custom TTF fonts have widths issues in server-side jsPDF)
+  const titleFont = 'helvetica'
+  const bodyFont = 'helvetica'
 
   // ══════════════════════════════════════════════════
   // BACKGROUND

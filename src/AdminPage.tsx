@@ -40,7 +40,7 @@ const AdminPage: React.FC = () => {
     setError(null)
 
     try {
-      // Try API first (works on Vercel), fall back to direct Supabase (works locally)
+      // Try API first, fall back to direct Supabase (works locally)
       const resp = await fetch('/api/get-registrations', {
         headers: { 'x-admin-password': adminPassword },
       })
@@ -184,7 +184,7 @@ const AdminPage: React.FC = () => {
 
       const contentType = resp.headers.get('content-type') || ''
       if (!contentType.includes('application/json')) {
-        alert('API not available. Please deploy to Vercel to use accept/reject actions.')
+        alert('API not available. Please deploy the server to use accept/reject actions.')
         return
       }
 
@@ -221,14 +221,14 @@ const AdminPage: React.FC = () => {
           const err = await resp.json()
           alert(`Export error: ${err.error || 'Unknown'}`)
         } else {
-          alert('Export API not available. Please deploy to Vercel to use PDF export.')
+          alert('Export API not available. Please deploy the server to use PDF export.')
         }
         return
       }
 
       const contentType = resp.headers.get('content-type') || ''
       if (!contentType.includes('application/pdf')) {
-        alert('Export API not available. Please deploy to Vercel to use PDF export.')
+        alert('Export API not available. Please deploy the server to use PDF export.')
         return
       }
 
