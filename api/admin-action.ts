@@ -93,10 +93,15 @@ export default async function handler(req: Request, res: Response) {
         return res.status(400).json({ error: 'Already verified' })
       }
 
-      // Update verified to true
+      // Generate a unique ticket ID for the QR code
+      const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'
+      let ticketId = 'DS3-'
+      for (let i = 0; i < 8; i++) ticketId += chars.charAt(Math.floor(Math.random() * chars.length))
+
+      // Update verified to true and store ticket_id
       const { error: updateError } = await supabase
         .from('registrations')
-        .update({ verified: true })
+        .update({ verified: true, ticket_id: ticketId })
         .eq('id', registrationId)
 
       if (updateError) {
@@ -131,6 +136,7 @@ export default async function handler(req: Request, res: Response) {
         logoUrl: `${siteUrl}/title-sm.png`,
         characterUrl: eventMeta.characterImage,
         gdgLogoUrl: `${siteUrl}/gdg.png`,
+        ticketId,
       }
 
       const pdfBuffer = await generateTicketPDF(ticketData)

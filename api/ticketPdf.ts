@@ -18,6 +18,7 @@ export interface TicketData {
   logoUrl: string
   characterUrl: string
   gdgLogoUrl: string
+  ticketId?: string
 }
 
 function hexToRgb(hex: string): [number, number, number] {
@@ -67,7 +68,7 @@ export async function generateTicketPDF(data: TicketData): Promise<Buffer> {
   const [cr, cg, cb] = hexToRgb(data.themeColor)
   const [dr, dg, db] = darken(cr, cg, cb, 40)
   const [lr, lg, lb] = lighten(cr, cg, cb, 60)
-  const ticketId = generateTicketId()
+  const ticketId = data.ticketId || generateTicketId()
   const now = new Date()
   const dateStr = now.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })
   const timeStr = now.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })

@@ -11,6 +11,7 @@ type Registration = {
   team_name: string | null
   participants_count: number
   transaction_id: string | null
+  ticket_id: string | null
   payment_screenshot_url: string | null
   verified: boolean
   rejected: boolean | null
@@ -134,6 +135,7 @@ const AdminPage: React.FC = () => {
         r.college.toLowerCase().includes(q) ||
         (r.team_name || '').toLowerCase().includes(q) ||
         (r.transaction_id || '').toLowerCase().includes(q) ||
+        (r.ticket_id || '').toLowerCase().includes(q) ||
         r.phone.includes(q)
       )
     }
@@ -248,7 +250,7 @@ const AdminPage: React.FC = () => {
   }
 
   const exportCsv = () => {
-    const header = ['Event', 'Name', 'Email', 'Phone', 'College', 'Team', 'Participants', 'Transaction ID', 'Verified', 'Payment URL', 'Date']
+    const header = ['Event', 'Name', 'Email', 'Phone', 'College', 'Team', 'Participants', 'Transaction ID', 'Ticket ID', 'Verified', 'Payment URL', 'Date']
     const lines = [header.join(',')]
     for (const r of filteredRows) {
       const line = [
@@ -260,6 +262,7 @@ const AdminPage: React.FC = () => {
         r.team_name || '',
         String(r.participants_count),
         r.transaction_id || '',
+        r.ticket_id || '',
         r.verified ? 'Yes' : 'No',
         r.payment_screenshot_url || '',
         r.created_at ? new Date(r.created_at).toLocaleString('en-IN') : '',
@@ -426,6 +429,7 @@ const AdminPage: React.FC = () => {
                 <th>Team</th>
                 <th>Count</th>
                 <th>Txn ID</th>
+                <th>Ticket ID</th>
                 <th>Payment</th>
                 <th>Status</th>
                 <th>Date</th>
@@ -434,7 +438,7 @@ const AdminPage: React.FC = () => {
             </thead>
             <tbody>
               {filteredRows.length === 0 && (
-                <tr><td colSpan={13} className="empty-row">No registrations found</td></tr>
+                <tr><td colSpan={14} className="empty-row">No registrations found</td></tr>
               )}
               {filteredRows.map((r, idx) => (
                 <tr key={r.id} className={r.rejected ? 'row-rejected' : r.verified ? 'row-verified' : 'row-pending'}>
@@ -451,6 +455,7 @@ const AdminPage: React.FC = () => {
                   <td>{r.team_name || '-'}</td>
                   <td>{r.participants_count}</td>
                   <td className="cell-txn">{r.transaction_id || '-'}</td>
+                  <td className="cell-txn">{r.ticket_id || '-'}</td>
                   <td>
                     {r.payment_screenshot_url ? (
                       <button
