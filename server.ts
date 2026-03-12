@@ -17,7 +17,27 @@ process.on('unhandledRejection', (err) => {
 const app = express()
 const PORT = parseInt(process.env.PORT || '3000', 10)
 
+// Startup: log which required env vars are present
+const requiredEnv = [
+  'VITE_ADMIN_PASSWORD',
+  'SUPABASE_URL',
+  'SUPABASE_SERVICE_ROLE_KEY',
+  'RESEND_API_KEY',
+  'RESEND_FROM_EMAIL',
+  'SITE_URL',
+]
+console.log('[startup] Environment check:')
+for (const key of requiredEnv) {
+  console.log(`  ${key}: ${process.env[key] ? 'SET' : '*** MISSING ***'}`)
+}
+
 app.use(express.json({ limit: '10mb' }))
+
+// Log every API request for debugging
+app.use('/api', (req, _res, next) => {
+  console.log(`[api] ${req.method} ${req.path}`)
+  next()
+})
 
 // Wrap async handlers so Express catches rejections
 function asyncHandler(fn: (req: express.Request, res: express.Response, next: express.NextFunction) => Promise<unknown>) {
@@ -25,6 +45,15 @@ function asyncHandler(fn: (req: express.Request, res: express.Response, next: ex
     fn(req, res, next).catch(next)
   }
 }
+
+// Health check endpoint — shows which env vars are configured
+app.get('/api/health', (_req, res) => {
+  const status: Record<string, boolean> = {}
+  for (const key of requiredEnv) {
+    status[key] = !!process.env[key]
+  }
+  res.json({ ok: true, env: status, node: process.version, port: PORT })
+})
 
 // API routes
 app.all('/api/admin-action', asyncHandler(adminAction as Parameters<typeof asyncHandler>[0]))
