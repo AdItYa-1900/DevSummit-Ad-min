@@ -100,14 +100,10 @@ export default async function handler(req: Request, res: Response) {
     const newRecord = payload.record
     const oldRecord = payload.old_record
 
-    // Only proceed if verified just changed to true
-    if (newRecord.verified !== true || oldRecord.verified === true) {
-      console.log('[send-ticket] Ignoring — verified not changed to true')
-      return res.status(200).json({ message: 'Ignored — not a verification change' })
-    }
-
-    const registrationId = newRecord.id as string
-    console.log(`[send-ticket] Processing verification for registration ${registrationId}`)
+    // Ticket email is already sent by admin-action.ts when accepting.
+    // This webhook would send a duplicate — skip it.
+    console.log('[send-ticket] Skipping — ticket email is handled by admin-action endpoint')
+    return res.status(200).json({ message: 'Skipped — admin-action handles ticket emails' })
 
     // Fetch full registration with event data from Supabase
     const supabase = createClient(supabaseUrl, supabaseServiceKey)
