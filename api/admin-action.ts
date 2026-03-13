@@ -204,7 +204,7 @@ export default async function handler(req: Request, res: Response) {
               <div style="height: 4px; background: linear-gradient(90deg, #2d5a27, ${themeColor}, #2d5a27);"></div>
               <div style="padding: 32px;">
                 <div style="text-align: center; margin-bottom: 28px;">
-                  <h1 style="color: ${themeColor}; margin: 0; font-size: 26px;">DevSummit 3.0</h1>
+                  <img src="${siteUrl}/title-sm.png" alt="DevSummit 3.0" style="max-width: 220px; width: 100%; height: auto; display: inline-block;" />
                 </div>
                 <div style="background: #14141e; border: 1px solid ${themeColor}44; border-radius: 8px; padding: 24px; margin-bottom: 20px;">
                   <p style="color: #ccc; font-size: 15px;">
@@ -271,7 +271,7 @@ function buildAcceptEmailHtml(data: TicketData, eventMeta: EventMeta): string {
       <div style="padding: 32px;">
         <div style="text-align: center; margin-bottom: 28px;">
           <p style="color: #6b8f71; margin: 0 0 4px; font-size: 11px; letter-spacing: 3px; text-transform: uppercase;">The Jade Palace Has Spoken</p>
-          <h1 style="color: ${data.themeColor}; margin: 0; font-size: 30px; letter-spacing: 1px;">DevSummit 3.0</h1>
+          <img src="${data.logoUrl}" alt="DevSummit 3.0" style="max-width: 240px; width: 100%; height: auto; display: inline-block;" />
           <p style="color: #4ade80; margin: 10px 0 0; font-size: 14px; font-weight: 600;">✦ Your tribute has been accepted! ✦</p>
         </div>
         <div style="background: #14141e; border: 1px solid ${data.themeColor}44; border-radius: 8px; padding: 24px; margin-bottom: 20px;">
