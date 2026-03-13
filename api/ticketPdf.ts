@@ -60,6 +60,7 @@ async function loadAsBase64(url: string): Promise<string | null> {
 
 export async function generateTicketPDF(data: TicketData): Promise<Buffer> {
   const siteUrl = process.env.SITE_URL || process.env.RENDER_EXTERNAL_URL || 'http://localhost:3000'
+  const ticketTimezone = process.env.TICKET_TIMEZONE || 'Asia/Kolkata'
 
   const W = 280
   const H = 140
@@ -70,8 +71,18 @@ export async function generateTicketPDF(data: TicketData): Promise<Buffer> {
   const [lr, lg, lb] = lighten(cr, cg, cb, 60)
   const ticketId = data.ticketId || generateTicketId()
   const now = new Date()
-  const dateStr = now.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })
-  const timeStr = now.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })
+  const dateStr = now.toLocaleDateString('en-IN', {
+    day: '2-digit',
+    month: 'short',
+    year: 'numeric',
+    timeZone: ticketTimezone,
+  })
+  const timeStr = now.toLocaleTimeString('en-IN', {
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: true,
+    timeZone: ticketTimezone,
+  })
 
   // Load all assets in parallel
   const bambooVertUrl = `${siteUrl}/bamboo-stalk.png`
