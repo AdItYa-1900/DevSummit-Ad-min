@@ -95,11 +95,12 @@ export default async function handler(req: Request, res: Response) {
 
     const resend = new Resend(resendApiKey)
     const fromEmail = process.env.RESEND_FROM_EMAIL || 'DevSummit <tickets@devsummit.dev>'
+    const siteUrl = process.env.SITE_URL || process.env.RENDER_EXTERNAL_URL || 'http://localhost:3000'
 
     const { error: emailError } = await resend.emails.send({
       from: fromEmail,
       to: email,
-      subject: `🐉 The Scroll Has Recorded Your Name — ${eventMeta.title} | DevSummit 3.0`,
+      subject: `🐉 The Scroll Has Recorded Your Name - ${eventMeta.title} | DevSummit 3.0`,
       html: `
         <div style="font-family: 'Segoe UI', Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #0c0c14; color: #ffffff; border-radius: 12px; overflow: hidden;">
           <!-- Top bamboo accent bar -->
@@ -109,7 +110,7 @@ export default async function handler(req: Request, res: Response) {
             <!-- Header -->
             <div style="text-align: center; margin-bottom: 28px;">
               <p style="color: #6b8f71; margin: 0 0 4px; font-size: 11px; letter-spacing: 3px; text-transform: uppercase;">The Valley of Peace Welcomes You</p>
-              <h1 style="color: ${eventMeta.themeColor}; margin: 0; font-size: 30px; letter-spacing: 1px;">DevSummit 3.0</h1>
+              <img src="${siteUrl}/title-sm.png" alt="DevSummit 3.0" style="max-width: 240px; width: 100%; height: auto; display: inline-block;" />
               <p style="color: #d4a373; margin: 10px 0 0; font-size: 13px; font-style: italic;">"Your story may not have such a happy beginning, but that doesn't make you who you are."</p>
             </div>
 
