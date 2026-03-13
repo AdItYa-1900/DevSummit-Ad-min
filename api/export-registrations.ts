@@ -25,6 +25,7 @@ export default async function handler(req: Request, res: Response) {
   const { eventId } = req.body as { eventId?: string }
 
   const supabase = createClient(supabaseUrl, supabaseServiceKey)
+  const exportTimezone = process.env.TICKET_TIMEZONE || 'Asia/Kolkata'
 
   try {
     // Fetch events
@@ -67,7 +68,16 @@ export default async function handler(req: Request, res: Response) {
 
     doc.setFontSize(10)
     doc.setTextColor(100, 100, 100)
-    doc.text(`Generated: ${new Date().toLocaleString('en-IN')}  |  Total: ${rows.length}`, margin, 25)
+    const generatedAt = new Date().toLocaleString('en-IN', {
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: true,
+      timeZone: exportTimezone,
+    })
+    doc.text(`Generated: ${generatedAt}  |  Total: ${rows.length}`, margin, 25)
 
     // Table headers
     const headers = ['#', 'Name', 'Email', 'Phone', 'College', 'Team', 'Count', 'Txn ID', 'Verified', 'Date']
@@ -121,7 +131,14 @@ export default async function handler(req: Request, res: Response) {
         String(r.participants_count || ''),
         truncate(String(r.transaction_id || '-'), 22),
         r.verified ? 'Yes' : 'No',
-        r.created_at ? new Date(r.created_at as string).toLocaleDateString('en-IN') : '-',
+        r.created_at
+          ? new Date(r.created_at as string).toLocaleDateString('en-IN', {
+            day: '2-digit',
+            month: 'short',
+            year: 'numeric',
+            timeZone: exportTimezone,
+          })
+          : '-',
       ]
 
       for (let i = 0; i < values.length; i++) {
