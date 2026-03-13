@@ -148,7 +148,7 @@ export default async function handler(req: Request, res: Response) {
       const { error: emailError } = await resend.emails.send({
         from: fromEmail,
         to: ticketData.email,
-        subject: `🐉 The Dragon Scroll Awaits — ${ticketData.eventTitle} | DevSummit 3.0`,
+        subject: `🐉 The Dragon Scroll Awaits - ${ticketData.eventTitle} | DevSummit 3.0`,
         html: buildAcceptEmailHtml(ticketData, eventMeta),
         attachments: [{ filename, content: pdfBuffer.toString('base64') }],
       })
@@ -302,3 +302,4 @@ function buildAcceptEmailHtml(data: TicketData, eventMeta: EventMeta): string {
     </div>
   `
 }
+
